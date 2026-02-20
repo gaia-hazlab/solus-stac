@@ -1,0 +1,15 @@
+[workspace]
+authors = ["Scott Henderson <3924836+scottyhq@users.noreply.github.com>"]
+channels = ["conda-forge"]
+name = "solus-stac"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+build = "python build_catalog.py"
+
+[dependencies]
+jsonschema = ">=4"
+pandas = ">=2"
+pystac = ">=1"
+rio-stac = ">=0.12.0,<0.13"

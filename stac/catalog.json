@@ -1,0 +1,63 @@
+{
+  "type": "Catalog",
+  "id": "solus100",
+  "stac_version": "1.1.0",
+  "description": "STAC catalog for SOLUS100 soil property maps. 100-meter resolution predictions of soil properties across the contiguous United States. See https://storage.googleapis.com/solus100pub/index.html",
+  "links": [
+    {
+      "rel": "root",
+      "href": "./catalog.json",
+      "type": "application/json",
+      "title": "Soil Landscapes of the United States 100-meter (SOLUS100)"
+    },
+    {
+      "rel": "child",
+      "href": "./soil_thickness/collection.json",
+      "type": "application/json",
+      "title": "SOLUS100 \u2013 Soil Thickness Properties"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_0cm/collection.json",
+      "type": "application/json",
+      "title": "SOLUS100 \u2013 Depth 0 cm"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_5cm/collection.json",
+      "type": "application/json",
+      "title": "SOLUS100 \u2013 Depth 5 cm"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_15cm/collection.json",
+      "type": "application/json",
+      "title": "SOLUS100 \u2013 Depth 15 cm"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_30cm/collection.json",
+      "type": "application/json",
+      "title": "SOLUS100 \u2013 Depth 30 cm"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_60cm/collection.json",
+      "type": "application/json",
+      "title": "SOLUS100 \u2013 Depth 60 cm"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_100cm/collection.json",
+      "type": "application/json",
+      "title": "SOLUS100 \u2013 Depth 100 cm"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_150cm/collection.json",
+      "type": "application/json",
+      "title": "SOLUS100 \u2013 Depth 150 cm"
+    }
+  ],
+  "title": "Soil Landscapes of the United States 100-meter (SOLUS100)"
+}
