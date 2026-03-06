@@ -5,41 +5,38 @@ For dataset details see:
 * https://storage.googleapis.com/solus100pub/index.html
 * https://agdatacommons.nal.usda.gov/articles/dataset/Data_from_Soil_Landscapes_of_the_United_States_100-meter_SOLUS100_soil_property_maps_project_repository/25033856
 
-
 Metadata from https://storage.googleapis.com/solus100pub/Final_Layer_Table_20231215.csv
 
-## Catalog Structure:
+## Catalog Structure
+
+Each SOLUS property/Tif is provided with three asset corresponding to a best estimate and uncertainty bounds:
+* p: predicted property values
+* l: prediction interval low
+* h: prediction interval high
+* rpi: relative prediction interval
+
+STAC is commonly used to group collections of common items by their unique 'datetime' (e.g. acquisition dates of observations by the same satellite). So 'time' naturally becomes the 3rd dimension of a multidimensional xarray. For SOLUS however, all estimates share the same 'datetime' and are instead differentiated by 'depth' (0cm, 5cm, etc). This dictates the structure of our catalog. To easily ingest into Xarray, we need 'depth' to be a top-level property of every Item, just like 'datetime'.
+
+We therefore organize our STAC catalog by each SOLUS estimate type so that we can easily load a mulidimensional xarray with data variables corresponding to each physical property (cec7, sandco, etc) and a 3rd dimension corresponding to the depth (0cm, 5cm, etc).
 
 ```
-Catalog: catalog.json
-    Collection: soil_thickness.json
-        Item: soil_thickness.json
-            Assets:
-                anylithicdpt_cm_2D_h.tif
-                anylithicdpt_cm_2D_l.tif
-                anylithicdpt_cm_2D_p.tif
-                anylithicdpt_cm_2D_rpi.tif
-    Collection: depth_0cm.json
-        Item: caco3.json
-            Assets:
-                caco3_0_cm_h.tif
-                caco3_0_cm_l.tif
-                caco3_0_cm_p.tif
-                caco3_0_cm_rpi.tif
-        Item: claytotal.json
-            Assets:
-                claytotal_0_cm_h.tif
-                claytotal_0_cm_l.tif
-                claytotal_0_cm_p.tif
-        ...
-    Collection: depth_5cm.json
-        Item: caco3.json
-            Assets:
-                caco3_5_cm_h.tif
-                caco3_5_cm_l.tif
-                caco3_5_cm_p.tif
-                caco3_5_cm_rpi.tif
-        ...
-    Collection: depth_150cm.json
-        ...
+    Catalog
+    ├── Collection: p
+    │   ├── Collection: depth_0cm
+    │       ├── Item: caco3
+                └── Asset: caco3
+    │       └── Item: sandco
+                └── Asset: sandco
+    │   └── ...
+    ├── Collection: h
+    │   ├── Collection: depth_0cm
+    │       ├── Item: caco3
+                └── Asset: caco3
+    │       └── Item: sandco
+                └── Asset: sandco
+    │   └── ...
+    ├── Collection: rpi
+    │   └── ...
+    └── ...
+
 ```

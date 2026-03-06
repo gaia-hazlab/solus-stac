@@ -1,0 +1,73 @@
+{
+  "type": "Collection",
+  "id": "soil_thickness",
+  "stac_version": "1.1.0",
+  "description": "Depth to bedrock and depth to restriction layers from the SOLUS100 100-meter soil property maps.",
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../catalog.json",
+      "type": "application/json",
+      "title": "Soil Landscapes of the United States 100-meter (SOLUS100)"
+    },
+    {
+      "rel": "item",
+      "href": "./anylithicdpt/anylithicdpt.json",
+      "type": "application/geo+json"
+    },
+    {
+      "rel": "item",
+      "href": "./resdept/resdept.json",
+      "type": "application/geo+json"
+    },
+    {
+      "rel": "parent",
+      "href": "../collection.json",
+      "type": "application/json",
+      "title": "SOLUS100 \u2013 Relative Prediction Interval"
+    }
+  ],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+  ],
+  "item_assets": {
+    "anylithicdpt": {
+      "title": "Relative Prediction Interval",
+      "description": "Depth to bedrock (lithic or paralithic) (cm)",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "resdept": {
+      "title": "Relative Prediction Interval",
+      "description": "Depth to restriction (cm)",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "title": "Soil Thickness",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -130.57379525218755,
+          21.11139803406434,
+          -62.664008707395425,
+          48.428946105782785
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2023-12-15T00:00:00Z",
+          "2023-12-15T00:00:00Z"
+        ]
+      ]
+    }
+  },
+  "license": "CC-BY-4.0"
+}

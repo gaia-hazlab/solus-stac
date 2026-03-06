@@ -1,0 +1,93 @@
+{
+  "type": "Collection",
+  "id": "rpi",
+  "stac_version": "1.1.0",
+  "description": "Relative prediction interval (uncertainty) for SOLUS100 soil property values.",
+  "links": [
+    {
+      "rel": "root",
+      "href": "../catalog.json",
+      "type": "application/json",
+      "title": "Soil Landscapes of the United States 100-meter (SOLUS100)"
+    },
+    {
+      "rel": "child",
+      "href": "./soil_thickness/collection.json",
+      "type": "application/json",
+      "title": "Soil Thickness"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_0cm/collection.json",
+      "type": "application/json",
+      "title": "Depth 0 cm"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_5cm/collection.json",
+      "type": "application/json",
+      "title": "Depth 5 cm"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_15cm/collection.json",
+      "type": "application/json",
+      "title": "Depth 15 cm"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_30cm/collection.json",
+      "type": "application/json",
+      "title": "Depth 30 cm"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_60cm/collection.json",
+      "type": "application/json",
+      "title": "Depth 60 cm"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_100cm/collection.json",
+      "type": "application/json",
+      "title": "Depth 100 cm"
+    },
+    {
+      "rel": "child",
+      "href": "./depth_150cm/collection.json",
+      "type": "application/json",
+      "title": "Depth 150 cm"
+    },
+    {
+      "rel": "parent",
+      "href": "../catalog.json",
+      "type": "application/json",
+      "title": "Soil Landscapes of the United States 100-meter (SOLUS100)"
+    }
+  ],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+  ],
+  "title": "SOLUS100 \u2013 Relative Prediction Interval",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -130.57379525218755,
+          21.11139803406434,
+          -62.664008707395425,
+          48.428946105782785
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2023-12-15T00:00:00Z",
+          "2023-12-15T00:00:00Z"
+        ]
+      ]
+    }
+  },
+  "license": "CC-BY-4.0"
+}

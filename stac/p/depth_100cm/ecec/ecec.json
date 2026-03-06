@@ -1,0 +1,129 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+  ],
+  "id": "ecec",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -120.07734923406609,
+          21.11139803406434
+        ],
+        [
+          -72.8236312125808,
+          21.337114657400722
+        ],
+        [
+          -62.664008707395425,
+          48.428946105782785
+        ],
+        [
+          -130.57379525218755,
+          48.11462772789531
+        ],
+        [
+          -120.07734923406609,
+          21.11139803406434
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    -130.57379525218755,
+    21.11139803406434,
+    -62.664008707395425,
+    48.428946105782785
+  ],
+  "properties": {
+    "proj:epsg": 5070,
+    "proj:geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            -2540000.0,
+            119000.0
+          ],
+          [
+            2441000.0,
+            119000.0
+          ],
+          [
+            2441000.0,
+            3258000.0
+          ],
+          [
+            -2540000.0,
+            3258000.0
+          ],
+          [
+            -2540000.0,
+            119000.0
+          ]
+        ]
+      ]
+    },
+    "proj:bbox": [
+      -2540000.0,
+      119000.0,
+      2441000.0,
+      3258000.0
+    ],
+    "proj:shape": [
+      31390,
+      49810
+    ],
+    "proj:transform": [
+      100.0,
+      0.0,
+      -2540000.0,
+      0.0,
+      -100.0,
+      3258000.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "description": "Effective cation exchange capacity (meq/100g)",
+    "start_datetime": "2023-12-15T00:00:00+00:00",
+    "end_datetime": "2023-12-15T00:00:00+00:00",
+    "depth": 100,
+    "datetime": null
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../../catalog.json",
+      "type": "application/json",
+      "title": "Soil Landscapes of the United States 100-meter (SOLUS100)"
+    },
+    {
+      "rel": "collection",
+      "href": "../collection.json",
+      "type": "application/json",
+      "title": "Depth 100 cm"
+    },
+    {
+      "rel": "parent",
+      "href": "../collection.json",
+      "type": "application/json",
+      "title": "Depth 100 cm"
+    }
+  ],
+  "assets": {
+    "ecec": {
+      "href": "https://storage.googleapis.com/solus100pub/ecec_100_cm_p.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Prediction",
+      "scalar": 10,
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "depth_100cm"
+}

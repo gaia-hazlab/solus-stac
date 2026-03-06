@@ -12,51 +12,27 @@
     },
     {
       "rel": "child",
-      "href": "./soil_thickness/collection.json",
+      "href": "./p/collection.json",
       "type": "application/json",
-      "title": "SOLUS100 \u2013 Soil Thickness Properties"
+      "title": "SOLUS100 \u2013 Prediction"
     },
     {
       "rel": "child",
-      "href": "./depth_0cm/collection.json",
+      "href": "./h/collection.json",
       "type": "application/json",
-      "title": "SOLUS100 \u2013 Depth 0 cm"
+      "title": "SOLUS100 \u2013 95% High Prediction Interval"
     },
     {
       "rel": "child",
-      "href": "./depth_5cm/collection.json",
+      "href": "./l/collection.json",
       "type": "application/json",
-      "title": "SOLUS100 \u2013 Depth 5 cm"
+      "title": "SOLUS100 \u2013 95% Low Prediction Interval"
     },
     {
       "rel": "child",
-      "href": "./depth_15cm/collection.json",
+      "href": "./rpi/collection.json",
       "type": "application/json",
-      "title": "SOLUS100 \u2013 Depth 15 cm"
-    },
-    {
-      "rel": "child",
-      "href": "./depth_30cm/collection.json",
-      "type": "application/json",
-      "title": "SOLUS100 \u2013 Depth 30 cm"
-    },
-    {
-      "rel": "child",
-      "href": "./depth_60cm/collection.json",
-      "type": "application/json",
-      "title": "SOLUS100 \u2013 Depth 60 cm"
-    },
-    {
-      "rel": "child",
-      "href": "./depth_100cm/collection.json",
-      "type": "application/json",
-      "title": "SOLUS100 \u2013 Depth 100 cm"
-    },
-    {
-      "rel": "child",
-      "href": "./depth_150cm/collection.json",
-      "type": "application/json",
-      "title": "SOLUS100 \u2013 Depth 150 cm"
+      "title": "SOLUS100 \u2013 Relative Prediction Interval"
     }
   ],
   "title": "Soil Landscapes of the United States 100-meter (SOLUS100)"
