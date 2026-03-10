@@ -6,18 +6,25 @@ catalog/collection/item hierarchy.
 
 Catalog structure (see README.md):
     Catalog
+    ├── Collection: soil_thickness
+    │   ├── Item: anylithicdpt
+    │   │   ├── Asset: p
+    │   │   ├── Asset: l
+    │   │   ├── Asset: h
+    │   │   └── Asset: rpi
+    │   └── Item: resdept
+    │       └── ...
     ├── Collection: p  (prediction)
-    │   ├── Collection: depth_0cm
-    │   │   ├── Item: caco3   └── Asset: caco3
-    │   │   └── Item: sandco  └── Asset: sandco
-    │   ├── Collection: depth_5cm
+    │   ├── Item: depth_0cm
+    │   │   ├── Asset: caco3
+    │   │   ├── Asset: sandco
     │   │   └── ...
-    │   └── Collection: soil_thickness
-    │       ├── Item: anylithicdpt  └── Asset: anylithicdpt
-    │       └── Item: resdept       └── Asset: resdept
-    ├── Collection: h  (95% high prediction interval)
+    │   ├── Item: depth_5cm
+    │   │   └── ...
     │   └── ...
     ├── Collection: l  (95% low prediction interval)
+    │   └── ...
+    ├── Collection: h  (95% high prediction interval)
     │   └── ...
     └── Collection: rpi  (relative prediction interval)
         └── ...
@@ -45,39 +52,56 @@ BUCKET_URL = "https://storage.googleapis.com/solus100pub"
 CSV_URL = f"{BUCKET_URL}/Final_Layer_Table_20231215.csv"
 CATALOG_DIR = Path("stac")
 
-# Depths that belong to individual depth collections
+# Depths that belong to individual depth items
 DEPTH_VALUES = ["0_cm", "5_cm", "15_cm", "30_cm", "60_cm", "100_cm", "150_cm"]
 
 # Depths that belong to the soil_thickness collection (not depth-specific)
 THICKNESS_DEPTHS = ["NA", "all_cm"]
 
 # Ordered estimate-type keys used as top-level collection IDs
-ESTIMATE_KEYS = ["p", "h", "l", "rpi"]
+ESTIMATE_KEYS = ["p", "l", "h", "rpi"]
 
 # Full metadata for each estimate type, keyed by the short ID
 ESTIMATE_TYPES: dict[str, dict] = {
     "p": {
         "filetype": "prediction",
-        "title": "Prediction",
-        "description": "Best-estimate (predicted) soil property values from SOLUS100.",
-        "roles": ["data"],
-    },
-    "h": {
-        "filetype": "95% high prediction interval",
-        "title": "95% High Prediction Interval",
-        "description": "95% upper prediction interval for SOLUS100 soil property values.",
+        "collection_id": "p",
+        "collection_title": "SOLUS100 – Prediction",
+        "collection_description": (
+            "Best-estimate (predicted) soil property values from SOLUS100 "
+            "100-meter resolution maps."
+        ),
+        "asset_title": "Prediction",
         "roles": ["data"],
     },
     "l": {
         "filetype": "95% low prediction interval",
-        "title": "95% Low Prediction Interval",
-        "description": "95% lower prediction interval for SOLUS100 soil property values.",
+        "collection_id": "l",
+        "collection_title": "SOLUS100 – Low Prediction Interval",
+        "collection_description": (
+            "95% lower prediction interval for SOLUS100 soil property values."
+        ),
+        "asset_title": "95% Low Prediction Interval",
+        "roles": ["data"],
+    },
+    "h": {
+        "filetype": "95% high prediction interval",
+        "collection_id": "h",
+        "collection_title": "SOLUS100 – High Prediction Interval",
+        "collection_description": (
+            "95% upper prediction interval for SOLUS100 soil property values."
+        ),
+        "asset_title": "95% High Prediction Interval",
         "roles": ["data"],
     },
     "rpi": {
         "filetype": "relative prediction interval",
-        "title": "Relative Prediction Interval",
-        "description": "Relative prediction interval (uncertainty) for SOLUS100 soil property values.",
+        "collection_id": "rpi",
+        "collection_title": "SOLUS100 – Relative Prediction Interval",
+        "collection_description": (
+            "Relative prediction interval (uncertainty) for SOLUS100 soil property values."
+        ),
+        "asset_title": "Relative Prediction Interval",
         "roles": ["data"],
     },
 }
@@ -85,6 +109,7 @@ ESTIMATE_TYPES: dict[str, dict] = {
 PROJ_EXT_URL = (
     f"https://stac-extensions.github.io/projection/{PROJECTION_EXT_VERSION}/schema.json"
 )
+RASTER_EXT_URL = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
 
 
 # ---------------------------------------------------------------------------
@@ -120,79 +145,160 @@ def get_proj_properties(href: str) -> dict:
     with rasterio.open(vsicurl) as src:
         geom_info = get_dataset_geom(src)
         proj_info = get_projection_info(src)
+        dtype: str = src.dtypes[0]
+        raw_nodata = src.nodata
+        nodata = int(raw_nodata) if raw_nodata is not None and raw_nodata == int(raw_nodata) else raw_nodata
     return {
         "bbox": geom_info["bbox"],
         "geometry": geom_info["footprint"],
         "proj_properties": {f"proj:{k}": v for k, v in proj_info.items()},
+        "dtype": dtype,
+        "nodata": nodata,
     }
 
 
 # ---------------------------------------------------------------------------
-# 3. Build a single-asset STAC Item for one variable / depth / estimate type
+# 3. Build STAC Items
 # ---------------------------------------------------------------------------
 
 
-def create_item(
-    variable: str,
-    row: pd.Series,
+def _make_release_dt() -> datetime.datetime:
+    return datetime.datetime(2023, 12, 15, tzinfo=datetime.timezone.utc)
+
+
+def _base_properties(proj_props: dict) -> dict:
+    release_dt = _make_release_dt()
+    return {
+        **proj_props["proj_properties"],
+        "start_datetime": release_dt.isoformat(),
+        "end_datetime": release_dt.isoformat(),
+    }
+
+
+def _raster_band(proj_props: dict, scalar: int, units: str) -> dict:
+    """Build a ``raster:bands`` entry.
+
+    When *scalar* is not 1, the stored integer value must be divided by
+    *scalar* to recover the physical quantity, so ``scale = 1 / scalar``
+    and ``offset = 0`` are added per the STAC Raster Extension spec.
+    """
+    band: dict = {
+        "data_type": proj_props["dtype"],
+        "nodata": proj_props["nodata"],
+        "unit": units,
+    }
+    if scalar != 1:
+        band["scale"] = 1 / scalar
+        band["offset"] = 0
+    return band
+
+
+def create_depth_item(
+    depth: str,
+    depth_df: pd.DataFrame,
     estimate_key: str,
     proj_props: dict,
-    depth_cm: int | None = None,
 ) -> pystac.Item:
-    """Create a pystac.Item for one soil variable with a single COG asset.
+    """Create a pystac.Item for one depth with one Asset per soil variable.
 
     Parameters
     ----------
-    variable : str
-        Soil property name (e.g. ``"caco3"``).
-    row : pd.Series
-        Single row from the layer table for this variable/depth/filetype.
+    depth : str
+        Depth label, e.g. ``"0_cm"``.
+    depth_df : pd.DataFrame
+        Rows from the layer table for this depth and estimate type (one row
+        per soil variable).
     estimate_key : str
-        Short estimate-type key (``"p"``, ``"h"``, ``"l"``, or ``"rpi"``).
+        Short estimate-type key (``"p"``, ``"l"``, ``"h"``, or ``"rpi"``).
     proj_props : dict
         Shared projection properties returned by :func:`get_proj_properties`.
-    depth_cm : int or None
-        Depth in centimetres.  ``None`` for soil-thickness items.
 
     Returns
     -------
     pystac.Item
     """
-    description = row["description"]
-    units = row["units"]
+    depth_num = depth.replace("_cm", "")
+    item_id = f"depth_{depth_num}cm"
+    depth_cm = int(depth_num)
     est = ESTIMATE_TYPES[estimate_key]
 
-    release_dt = datetime.datetime(2023, 12, 15, tzinfo=datetime.timezone.utc)
+    properties = _base_properties(proj_props)
+    properties["depth"] = depth_cm
 
-    properties: dict = {
-        **proj_props["proj_properties"],
-        "description": f"{description} ({units})",
-        "start_datetime": release_dt.isoformat(),
-        "end_datetime": release_dt.isoformat(),
-    }
+    assets: dict[str, pystac.Asset] = {}
+    for _, row in depth_df.iterrows():
+        variable = row["property"]
+        scalar = int(row["scalar"])
+        assets[variable] = pystac.Asset(
+            href=row["href"],
+            title=f"{row['description']} ({row['units']})",
+            media_type=pystac.MediaType.COG,
+            roles=est["roles"],
+            extra_fields={
+                "raster:bands": [_raster_band(proj_props, scalar, row["units"])],
+            },
+        )
 
-    if depth_cm is not None:
-        properties["depth"] = depth_cm
-
-    asset = pystac.Asset(
-        href=row["href"],
-        title=est["title"],
-        media_type=pystac.MediaType.COG,
-        roles=est["roles"],
-        extra_fields={"scalar": int(row["scalar"])},
-    )
-
-    item = pystac.Item(
-        id=variable,
+    return pystac.Item(
+        id=item_id,
         geometry=proj_props["geometry"],
         bbox=proj_props["bbox"],
         datetime=None,
         properties=properties,
-        stac_extensions=[PROJ_EXT_URL],
-        assets={variable: asset},
+        stac_extensions=[PROJ_EXT_URL, RASTER_EXT_URL],
+        assets=assets,
     )
 
-    return item
+
+def create_thickness_item(
+    estimate_key: str,
+    est_df: pd.DataFrame,
+    variable_descriptions: dict[str, str],
+    proj_props: dict,
+) -> pystac.Item:
+    """Create a pystac.Item for one estimate type with one asset per thickness variable.
+
+    Parameters
+    ----------
+    estimate_key : str
+        Short estimate-type key (``"p"``, ``"l"``, ``"h"``, or ``"rpi"``).
+    est_df : pd.DataFrame
+        All rows for this estimate type (one per thickness variable).
+    variable_descriptions : dict[str, str]
+        Mapping of variable name → human-readable description string.
+    proj_props : dict
+        Shared projection properties.
+
+    Returns
+    -------
+    pystac.Item
+    """
+    est = ESTIMATE_TYPES[estimate_key]
+    properties = _base_properties(proj_props)
+
+    assets: dict[str, pystac.Asset] = {}
+    for _, row in est_df.iterrows():
+        variable = row["property"]
+        scalar = int(row["scalar"])
+        assets[variable] = pystac.Asset(
+            href=row["href"],
+            title=variable_descriptions.get(variable, variable),
+            media_type=pystac.MediaType.COG,
+            roles=est["roles"],
+            extra_fields={
+                "raster:bands": [_raster_band(proj_props, scalar, row["units"])],
+            },
+        )
+
+    return pystac.Item(
+        id=estimate_key,
+        geometry=proj_props["geometry"],
+        bbox=proj_props["bbox"],
+        datetime=None,
+        properties=properties,
+        stac_extensions=[PROJ_EXT_URL, RASTER_EXT_URL],
+        assets=assets,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -201,115 +307,113 @@ def create_item(
 
 
 def _make_temporal_extent() -> pystac.TemporalExtent:
-    release_dt = datetime.datetime(2023, 12, 15, tzinfo=datetime.timezone.utc)
+    release_dt = _make_release_dt()
     return pystac.TemporalExtent(intervals=[[release_dt, release_dt]])
 
 
-def create_depth_collection(
-    depth: str,
-    items: list[pystac.Item],
+def _spatial_extent(items: list[pystac.Item]) -> pystac.SpatialExtent:
+    return pystac.SpatialExtent(bboxes=[items[0].bbox])
+
+
+def create_estimate_collection(
     estimate_key: str,
+    items: list[pystac.Item],
+    variable_descriptions: dict[str, str],
 ) -> pystac.Collection:
-    """Create a pystac.Collection for a specific depth.
+    """Create a top-level Collection for one estimate type.
+
+    Items are one per depth; each Item contains one Asset per soil variable.
+    ``item_assets`` is populated with one entry per variable so that clients
+    know the full set of available assets without inspecting individual Items.
 
     Parameters
     ----------
-    depth : str
-        Depth label, e.g. ``"0_cm"`` or ``"soil_thickness"``.
-    items : list[pystac.Item]
-        Items belonging to this collection (one per soil variable).
     estimate_key : str
-        Short estimate-type key (``"p"``, ``"h"``, ``"l"``, or ``"rpi"``).
-        Used to populate ``item_assets`` metadata on the collection.
+        Short estimate-type key (``"p"``, ``"l"``, ``"h"``, or ``"rpi"``).
+    items : list[pystac.Item]
+        One Item per depth level, each with assets keyed by variable name.
+    variable_descriptions : dict[str, str]
+        Mapping of variable name → human-readable description string
+        (e.g. ``"caco3" → "Calcium carbonate (percent mass)"``).
 
     Returns
     -------
     pystac.Collection
     """
-    if depth == "soil_thickness":
-        collection_id = "soil_thickness"
-        title = "Soil Thickness"
-        description = (
-            "Depth to bedrock and depth to restriction layers from the "
-            "SOLUS100 100-meter soil property maps."
-        )
-    else:
-        depth_num = depth.replace("_cm", "")
-        collection_id = f"depth_{depth_num}cm"
-        title = f"Depth {depth_num} cm"
-        description = (
-            f"Soil property predictions at {depth_num} cm depth from the "
-            "SOLUS100 100-meter soil property maps."
-        )
-
     est = ESTIMATE_TYPES[estimate_key]
-
-    bbox = items[0].bbox
     collection = pystac.Collection(
-        id=collection_id,
-        title=title,
-        description=description,
+        id=est["collection_id"],
+        title=est["collection_title"],
+        description=est["collection_description"],
         extent=pystac.Extent(
-            spatial=pystac.SpatialExtent(bboxes=[bbox]),
+            spatial=_spatial_extent(items),
             temporal=_make_temporal_extent(),
         ),
         license="CC-BY-4.0",
-        stac_extensions=[PROJ_EXT_URL],
+        stac_extensions=[PROJ_EXT_URL, RASTER_EXT_URL],
     )
 
-    # Populate item_assets: one entry per variable (= asset key in member Items).
-    # The description is taken from the item's own properties so it is specific
-    # to each soil variable (e.g. "Silt content (percent mass)").
-    for item in items:
-        for asset_key in item.assets:
-            collection.item_assets[asset_key] = pystac.ItemAssetDefinition.create(
-                title=est["title"],
-                description=item.properties.get("description"),
-                media_type=pystac.MediaType.COG,
-                roles=est["roles"],
-            )
+    # item_assets: advertise every variable asset so odc.stac (and other
+    # clients) can discover the full band list from the collection alone.
+    for variable, var_description in sorted(variable_descriptions.items()):
+        collection.item_assets[variable] = pystac.ItemAssetDefinition.create(
+            title=var_description,
+            description=est["collection_description"],
+            media_type=pystac.MediaType.COG,
+            roles=est["roles"],
+        )
 
     for item in items:
         collection.add_item(item)
     return collection
 
 
-def create_estimate_collection(
-    estimate_key: str,
-    depth_collections: list[pystac.Collection],
+def create_thickness_collection(
+    items: list[pystac.Item],
+    variable_descriptions: dict[str, str],
 ) -> pystac.Collection:
-    """Create a top-level pystac.Collection for one estimate type.
+    """Create the soil_thickness Collection.
+
+    Items are one per estimate type (p/l/h/rpi); each Item has one asset per
+    thickness variable (anylithicdpt, resdept).
 
     Parameters
     ----------
-    estimate_key : str
-        Short estimate-type key (``"p"``, ``"h"``, ``"l"``, or ``"rpi"``).
-    depth_collections : list[pystac.Collection]
-        Depth sub-collections belonging to this estimate type.
+    items : list[pystac.Item]
+        One Item per estimate type.
+    variable_descriptions : dict[str, str]
+        Mapping of variable name → human-readable description string.
 
     Returns
     -------
     pystac.Collection
     """
-    est = ESTIMATE_TYPES[estimate_key]
-    bbox = next(
-        item.bbox
-        for col in depth_collections
-        for item in col.get_items()
-    )
     collection = pystac.Collection(
-        id=estimate_key,
-        title=f"SOLUS100 – {est['title']}",
-        description=est["description"],
+        id="soil_thickness",
+        title="SOLUS100 – Soil Thickness",
+        description=(
+            "Depth to bedrock and depth to restriction layers from the "
+            "SOLUS100 100-meter soil property maps."
+        ),
         extent=pystac.Extent(
-            spatial=pystac.SpatialExtent(bboxes=[bbox]),
+            spatial=_spatial_extent(items),
             temporal=_make_temporal_extent(),
         ),
         license="CC-BY-4.0",
-        stac_extensions=[PROJ_EXT_URL],
+        stac_extensions=[PROJ_EXT_URL, RASTER_EXT_URL],
     )
-    for depth_col in depth_collections:
-        collection.add_child(depth_col)
+
+    # item_assets: one entry per thickness variable (shared across all estimate items)
+    for variable, var_description in sorted(variable_descriptions.items()):
+        collection.item_assets[variable] = pystac.ItemAssetDefinition.create(
+            title=var_description,
+            description=var_description,
+            media_type=pystac.MediaType.COG,
+            roles=["data"],
+        )
+
+    for item in items:
+        collection.add_item(item)
     return collection
 
 
@@ -321,8 +425,11 @@ def create_estimate_collection(
 def build_catalog(df: pd.DataFrame, proj_props: dict) -> pystac.Catalog:
     """Assemble the full SOLUS STAC catalog.
 
-    The catalog is organised first by estimate type (p / h / l / rpi) and
-    then by depth, so that each Item contains exactly one COG asset.
+    Structure:
+    - One ``soil_thickness`` Collection: one Item per estimate type (p/l/h/rpi),
+      each with 2 assets (anylithicdpt, resdept).
+    - One Collection per estimate type (p/l/h/rpi): one Item per depth,
+      one Asset per soil variable.
 
     Parameters
     ----------
@@ -346,49 +453,56 @@ def build_catalog(df: pd.DataFrame, proj_props: dict) -> pystac.Catalog:
         ),
     )
 
+    # --- soil_thickness collection ---
+    # Items: one per estimate type (p/l/h/rpi); each Item has one asset per thickness variable.
+    thickness_df = df[df["depth"].isin(THICKNESS_DEPTHS)]
+    if not thickness_df.empty:
+        # Build variable→description lookup from thickness rows
+        thickness_var_descriptions: dict[str, str] = {
+            row["property"]: f"{row['description']} ({row['units']})"
+            for _, row in thickness_df.drop_duplicates("property").iterrows()
+        }
+        thickness_items: list[pystac.Item] = []
+        for estimate_key in ESTIMATE_KEYS:
+            est = ESTIMATE_TYPES[estimate_key]
+            est_df = thickness_df[thickness_df["filetype"] == est["filetype"]]
+            if est_df.empty:
+                continue
+            item = create_thickness_item(estimate_key, est_df, thickness_var_descriptions, proj_props)
+            thickness_items.append(item)
+            logger.info("  [soil_thickness] Item: %s (%d assets)", estimate_key, len(item.assets))
+        thickness_col = create_thickness_collection(thickness_items, thickness_var_descriptions)
+        catalog.add_child(thickness_col)
+        logger.info("Collection: %s (%d items)", thickness_col.id, len(thickness_items))
+
+    # --- per-estimate-type collections ---
+    # Items: one per depth; each Item has one asset per soil variable.
+    #
+    # Build a variable→description lookup once from any depth/filetype combo.
+    variable_descriptions: dict[str, str] = {
+        row["property"]: f"{row['description']} ({row['units']})"
+        for _, row in df[df["depth"] == DEPTH_VALUES[0]].iterrows()
+    }
+
     for estimate_key in ESTIMATE_KEYS:
         est = ESTIMATE_TYPES[estimate_key]
         filetype = est["filetype"]
         est_df = df[df["filetype"] == filetype]
 
-        depth_collections: list[pystac.Collection] = []
-
-        # --- soil_thickness depth (NA / all_cm rows) ---
-        thickness_df = est_df[est_df["depth"].isin(THICKNESS_DEPTHS)]
-        if not thickness_df.empty:
-            thickness_items: list[pystac.Item] = []
-            for variable, var_rows in thickness_df.groupby("property"):
-                row = var_rows.iloc[0]
-                item = create_item(variable, row, estimate_key, proj_props, depth_cm=None)
-                thickness_items.append(item)
-                logger.info("  [%s/soil_thickness] Item: %s", estimate_key, variable)
-            depth_collections.append(
-                create_depth_collection("soil_thickness", thickness_items, estimate_key)
-            )
-
-        # --- numeric depth collections ---
+        depth_items: list[pystac.Item] = []
         for depth in DEPTH_VALUES:
             depth_df = est_df[est_df["depth"] == depth]
             if depth_df.empty:
                 continue
-            depth_cm = int(depth.replace("_cm", ""))
-            depth_items: list[pystac.Item] = []
-            for variable, var_rows in depth_df.groupby("property"):
-                row = var_rows.iloc[0]
-                item = create_item(variable, row, estimate_key, proj_props, depth_cm=depth_cm)
-                depth_items.append(item)
-                logger.info("  [%s/%s] Item: %s", estimate_key, depth, variable)
-            depth_collections.append(create_depth_collection(depth, depth_items, estimate_key))
+            item = create_depth_item(depth, depth_df, estimate_key, proj_props)
+            depth_items.append(item)
+            logger.info(
+                "  [%s] Item: %s (%d assets)", estimate_key, item.id, len(item.assets)
+            )
 
-        est_collection = create_estimate_collection(estimate_key, depth_collections)
-        catalog.add_child(est_collection)
-        n_items = sum(len(list(c.get_items())) for c in depth_collections)
-        logger.info(
-            "Collection: %s (%d depth groups, %d items)",
-            est_collection.id,
-            len(depth_collections),
-            n_items,
-        )
+        est_col = create_estimate_collection(estimate_key, depth_items, variable_descriptions)
+        catalog.add_child(est_col)
+        logger.info("Collection: %s (%d items)", est_col.id, len(depth_items))
 
     return catalog
 

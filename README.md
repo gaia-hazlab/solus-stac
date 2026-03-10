@@ -15,28 +15,41 @@ Each SOLUS property/Tif is provided with three asset corresponding to a best est
 * h: prediction interval high
 * rpi: relative prediction interval
 
-STAC is commonly used to group collections of common items by their unique 'datetime' (e.g. acquisition dates of observations by the same satellite). So 'time' naturally becomes the 3rd dimension of a multidimensional xarray. For SOLUS however, all estimates share the same 'datetime' and are instead differentiated by 'depth' (0cm, 5cm, etc). This dictates the structure of our catalog. To easily ingest into Xarray, we need 'depth' to be a top-level property of every Item, just like 'datetime'.
+We want to design a logically organized STAC catalog that works well with ODC.STAC. This assumes "Items from the same collection are assumed to have the same number and names of bands, and bands are assumed to use the same data_type across the collection." (https://odc-stac.readthedocs.io/en/latest/stac-best-practice.html#assumptions)
 
-We therefore organize our STAC catalog by each SOLUS estimate type so that we can easily load a mulidimensional xarray with data variables corresponding to each physical property (cec7, sandco, etc) and a 3rd dimension corresponding to the depth (0cm, 5cm, etc).
+STAC is commonly used to group collections of common items by their unique 'datetime' (e.g. acquisition dates of observations by the same satellite). So 'time' naturally becomes the 3rd dimension of a multidimensional xarray. For SOLUS however, all estimates share the same 'datetime' and are instead differentiated by 'depth' (0cm, 5cm, etc). This dictates the structure of our catalog.
+
+We will therefore have a single Item for each depth, which has an Asset corresponding to each property (cec7, sandco, etc) and a Collection for each estimate type (p, l, h, rpi). The exception is a separate Collection for soil_thickness, where there is no 'depth'.
 
 ```
     Catalog
-    ├── Collection: p
-    │   ├── Collection: depth_0cm
-    │       ├── Item: caco3
-                └── Asset: caco3
-    │       └── Item: sandco
-                └── Asset: sandco
+    ├── Collection: soil_thickness
+        ├── Item: p
+            ├── Asset: anylithicdpt
+            └── Asset: resdept
+        └── Item: rpi
+            ├── Asset: anylithicdpt
+            └── Asset: resdept
+        └── Item: ...
+    ├── Collection: prediction (p)
+    │   ├── Item: depth_0cm
+    │       ├── Asset: caco3 (https://storage.googleapis.com/solus100pub/caco3_0_cm_p.tif)
+            ├── Asset: sandco
+    │       └── ...
+    │   └── Item: depth_5cm
+    │       ├── Asset: caco3
+            ├── Asset: sandco
+    │       └── ...
+    ├── Collection: low (l)
+    │   ├── Item: depth_0cm
+    │       ├── Asset: caco3 (https://storage.googleapis.com/solus100pub/caco3_0_cm_l.tif)
+            ├── Asset: sandco
+    │       └── ...
+│       └── Item: depth_5cm
+            └── Asset: sandco
     │   └── ...
-    ├── Collection: h
-    │   ├── Collection: depth_0cm
-    │       ├── Item: caco3
-                └── Asset: caco3
-    │       └── Item: sandco
-                └── Asset: sandco
+    ├── Collection: high (h)
     │   └── ...
-    ├── Collection: rpi
-    │   └── ...
-    └── ...
+    └── Collection: interval (rpi)
 
 ```

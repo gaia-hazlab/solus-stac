@@ -1,0 +1,404 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/projection/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+  ],
+  "id": "depth_150cm",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -120.07734923406609,
+          21.11139803406434
+        ],
+        [
+          -72.8236312125808,
+          21.337114657400722
+        ],
+        [
+          -62.664008707395425,
+          48.428946105782785
+        ],
+        [
+          -130.57379525218755,
+          48.11462772789531
+        ],
+        [
+          -120.07734923406609,
+          21.11139803406434
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    -130.57379525218755,
+    21.11139803406434,
+    -62.664008707395425,
+    48.428946105782785
+  ],
+  "properties": {
+    "proj:epsg": 5070,
+    "proj:geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            -2540000.0,
+            119000.0
+          ],
+          [
+            2441000.0,
+            119000.0
+          ],
+          [
+            2441000.0,
+            3258000.0
+          ],
+          [
+            -2540000.0,
+            3258000.0
+          ],
+          [
+            -2540000.0,
+            119000.0
+          ]
+        ]
+      ]
+    },
+    "proj:bbox": [
+      -2540000.0,
+      119000.0,
+      2441000.0,
+      3258000.0
+    ],
+    "proj:shape": [
+      31390,
+      49810
+    ],
+    "proj:transform": [
+      100.0,
+      0.0,
+      -2540000.0,
+      0.0,
+      -100.0,
+      3258000.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "start_datetime": "2023-12-15T00:00:00+00:00",
+    "end_datetime": "2023-12-15T00:00:00+00:00",
+    "depth": 150,
+    "datetime": null
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../catalog.json",
+      "type": "application/json",
+      "title": "Soil Landscapes of the United States 100-meter (SOLUS100)"
+    },
+    {
+      "rel": "collection",
+      "href": "../collection.json",
+      "type": "application/json",
+      "title": "SOLUS100 \u2013 High Prediction Interval"
+    },
+    {
+      "rel": "parent",
+      "href": "../collection.json",
+      "type": "application/json",
+      "title": "SOLUS100 \u2013 High Prediction Interval"
+    }
+  ],
+  "assets": {
+    "caco3": {
+      "href": "https://storage.googleapis.com/solus100pub/caco3_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Calcium carbonate (percent mass)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "percent mass"
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "cec7": {
+      "href": "https://storage.googleapis.com/solus100pub/cec7_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Cation Exchange Capacity (pH 7) (meq/100g)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "meq/100g",
+          "scale": 0.1,
+          "offset": 0
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "claytotal": {
+      "href": "https://storage.googleapis.com/solus100pub/claytotal_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Clay content in percent (percent mass)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "percent mass"
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "dbovendry": {
+      "href": "https://storage.googleapis.com/solus100pub/dbovendry_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Bulk density (oven dry) (g cm-3)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "g cm-3",
+          "scale": 0.01,
+          "offset": 0
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "ec": {
+      "href": "https://storage.googleapis.com/solus100pub/ec_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Electrical Conductivity (sat. paste) (dS m-1)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "dS m-1",
+          "scale": 0.1,
+          "offset": 0
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "ecec": {
+      "href": "https://storage.googleapis.com/solus100pub/ecec_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Effective cation exchange capacity (meq/100g)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "meq/100g",
+          "scale": 0.1,
+          "offset": 0
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "fragvol": {
+      "href": "https://storage.googleapis.com/solus100pub/fragvol_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Rock (>2mm) content (percent volume)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "percent volume"
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "gypsum": {
+      "href": "https://storage.googleapis.com/solus100pub/gypsum_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Gypsum (in <20 mm fraction) (percent mass)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "percent mass",
+          "scale": 0.1,
+          "offset": 0
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "ph1to1h2o": {
+      "href": "https://storage.googleapis.com/solus100pub/ph1to1h2o_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "pH (1:1 method) (-log10([H+]))",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "-log10([H+])",
+          "scale": 0.01,
+          "offset": 0
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "sandco": {
+      "href": "https://storage.googleapis.com/solus100pub/sandco_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Coarse sand (percent mass)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "percent mass"
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "sandfine": {
+      "href": "https://storage.googleapis.com/solus100pub/sandfine_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Fine sand (percent mass)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "percent mass"
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "sandmed": {
+      "href": "https://storage.googleapis.com/solus100pub/sandmed_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Medium sand (percent mass)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "percent mass"
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "sandtotal": {
+      "href": "https://storage.googleapis.com/solus100pub/sandtotal_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Sand content (percent mass)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "percent mass"
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "sandvc": {
+      "href": "https://storage.googleapis.com/solus100pub/sandvc_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Very coarse sand (percent mass)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "percent mass"
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "sandvf": {
+      "href": "https://storage.googleapis.com/solus100pub/sandvf_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Very fine sand (percent mass)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "percent mass"
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "sar": {
+      "href": "https://storage.googleapis.com/solus100pub/sar_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Sodium adsorption ratio (ratio)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "ratio"
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "silttotal": {
+      "href": "https://storage.googleapis.com/solus100pub/silttotal_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Silt content (percent mass)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "percent mass"
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "soc": {
+      "href": "https://storage.googleapis.com/solus100pub/soc_150_cm_h.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Soil organic carbon (percent mass)",
+      "raster:bands": [
+        {
+          "data_type": "uint8",
+          "nodata": 255,
+          "unit": "percent mass",
+          "scale": 0.001,
+          "offset": 0
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "h"
+}

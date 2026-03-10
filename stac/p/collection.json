@@ -2,7 +2,7 @@
   "type": "Collection",
   "id": "p",
   "stac_version": "1.1.0",
-  "description": "Best-estimate (predicted) soil property values from SOLUS100.",
+  "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
   "links": [
     {
       "rel": "root",
@@ -11,52 +11,39 @@
       "title": "Soil Landscapes of the United States 100-meter (SOLUS100)"
     },
     {
-      "rel": "child",
-      "href": "./soil_thickness/collection.json",
-      "type": "application/json",
-      "title": "Soil Thickness"
+      "rel": "item",
+      "href": "./depth_0cm/depth_0cm.json",
+      "type": "application/geo+json"
     },
     {
-      "rel": "child",
-      "href": "./depth_0cm/collection.json",
-      "type": "application/json",
-      "title": "Depth 0 cm"
+      "rel": "item",
+      "href": "./depth_5cm/depth_5cm.json",
+      "type": "application/geo+json"
     },
     {
-      "rel": "child",
-      "href": "./depth_5cm/collection.json",
-      "type": "application/json",
-      "title": "Depth 5 cm"
+      "rel": "item",
+      "href": "./depth_15cm/depth_15cm.json",
+      "type": "application/geo+json"
     },
     {
-      "rel": "child",
-      "href": "./depth_15cm/collection.json",
-      "type": "application/json",
-      "title": "Depth 15 cm"
+      "rel": "item",
+      "href": "./depth_30cm/depth_30cm.json",
+      "type": "application/geo+json"
     },
     {
-      "rel": "child",
-      "href": "./depth_30cm/collection.json",
-      "type": "application/json",
-      "title": "Depth 30 cm"
+      "rel": "item",
+      "href": "./depth_60cm/depth_60cm.json",
+      "type": "application/geo+json"
     },
     {
-      "rel": "child",
-      "href": "./depth_60cm/collection.json",
-      "type": "application/json",
-      "title": "Depth 60 cm"
+      "rel": "item",
+      "href": "./depth_100cm/depth_100cm.json",
+      "type": "application/geo+json"
     },
     {
-      "rel": "child",
-      "href": "./depth_100cm/collection.json",
-      "type": "application/json",
-      "title": "Depth 100 cm"
-    },
-    {
-      "rel": "child",
-      "href": "./depth_150cm/collection.json",
-      "type": "application/json",
-      "title": "Depth 150 cm"
+      "rel": "item",
+      "href": "./depth_150cm/depth_150cm.json",
+      "type": "application/geo+json"
     },
     {
       "rel": "parent",
@@ -66,8 +53,155 @@
     }
   ],
   "stac_extensions": [
-    "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+    "https://stac-extensions.github.io/projection/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
   ],
+  "item_assets": {
+    "caco3": {
+      "title": "Calcium carbonate (percent mass)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "cec7": {
+      "title": "Cation Exchange Capacity (pH 7) (meq/100g)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "claytotal": {
+      "title": "Clay content in percent (percent mass)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "dbovendry": {
+      "title": "Bulk density (oven dry) (g cm-3)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "ec": {
+      "title": "Electrical Conductivity (sat. paste) (dS m-1)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "ecec": {
+      "title": "Effective cation exchange capacity (meq/100g)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "fragvol": {
+      "title": "Rock (>2mm) content (percent volume)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "gypsum": {
+      "title": "Gypsum (in <20 mm fraction) (percent mass)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "ph1to1h2o": {
+      "title": "pH (1:1 method) (-log10([H+]))",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "sandco": {
+      "title": "Coarse sand (percent mass)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "sandfine": {
+      "title": "Fine sand (percent mass)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "sandmed": {
+      "title": "Medium sand (percent mass)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "sandtotal": {
+      "title": "Sand content (percent mass)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "sandvc": {
+      "title": "Very coarse sand (percent mass)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "sandvf": {
+      "title": "Very fine sand (percent mass)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "sar": {
+      "title": "Sodium adsorption ratio (ratio)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "silttotal": {
+      "title": "Silt content (percent mass)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    },
+    "soc": {
+      "title": "Soil organic carbon (percent mass)",
+      "description": "Best-estimate (predicted) soil property values from SOLUS100 100-meter resolution maps.",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ]
+    }
+  },
   "title": "SOLUS100 \u2013 Prediction",
   "extent": {
     "spatial": {
